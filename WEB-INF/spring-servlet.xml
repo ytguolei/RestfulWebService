@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- Spring MVC公共配置 start -->
+	<!-- View Resolver, 1: tiles view 2: resource view 3: JSTL view start -->
+	<bean id="resourceBundleViewResolver"
+		class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
+		<property name="basenames" value="properties/views" />
+		<property name="order" value="1" />
+	</bean>
+	<bean id="tilesViewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.tiles2.TilesView" />
+		<property name="order" value="2" />
+	</bean>
+	<bean id="jstlViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="3" />
+	</bean>
+	<!-- View Resolver, 1: tiles view 2: resource view 3: JSTL view end -->
+
+	<!-- 多请求处理控制器 start -->
+	<bean id="abstractForwardController" abstract="true"
+		class="org.springframework.web.servlet.mvc.ParameterizableViewController" />
+
+	<bean id="paramMethodResolver"
+		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="paramName" value="method" />
+	</bean>
+
+	<!-- 多请求处理控制器 end -->
+
+	<!-- 页面国际化 start -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:properties/messages</value>
+				<value>classpath:properties/errors</value>
+				<value>classpath:properties/imgUpload</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+	<!-- 页面国际化 end -->
+
+	<!-- 集成验证插件 start -->
+	<bean id="beanValidator"
+		class="org.springmodules.validation.commons.DefaultBeanValidator">
+		<property name="validatorFactory" ref="validatorFactory" />
+	</bean>
+
+	<bean id="validatorFactory"
+		class="org.springmodules.validation.commons.DefaultValidatorFactory">
+		<property name="validationConfigLocations">
+			<list>
+				<value>classpath:validator/validator-rules.xml</value>
+				<value>classpath:validator/validator.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="100000" />
+	</bean>
+	<!-- 集成验证插件 end -->
+	<!-- tiles -->
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/classes/tiles/tiles-common.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-location.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-monitor.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-dd.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-interface.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-jit.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-pps.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-query.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-sps.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-sysmaintain.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-usersetting.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-part.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-plan.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-eps.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-press.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-log.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-job.xml</value>
+				<value>/WEB-INF/classes/tiles/tiles-stac.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置定义CONTROLLER父类 -->
+	<bean id="baseController" abstract="true"
+		class="com.sgm.melos.data.controller.BaseController">
+		<property name="methodNameResolver" ref="paramMethodResolver" />
+		<property name="messageSource" ref="messageSource" />
+
+	</bean>
+	<!-- Spring MVC公共配置 end -->
+	
+	<bean 
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:properties/imgUpload.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean class="com.sgm.melos.framework.common.util.ApplicationContextUtil"></bean>
+
+	<!-- 导入模块配置文件 -->
+	<import resource="classpath:servlet/data/spring-servlet-data.xml" />
+</beans>
